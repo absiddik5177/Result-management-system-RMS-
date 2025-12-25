@@ -38,6 +38,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('short_name');
+           // $table->enum('short_name')->values("Compulsory", "Optional")->default("Compulsory");
             $table->unsignedBigInteger('group_id')->nullable();
             $table->timestamps();
             

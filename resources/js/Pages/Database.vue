@@ -4,10 +4,11 @@
       <div class="col-md-6">
         <Card varient="gray" body-class="p-0">
           <template #title>
-            Classes <i v-show="loadingTable" class="fa fa-spinner fa-spin"></i>
+            Database <i v-show="loadingTable" class="fa fa-spinner fa-spin"></i>
           </template>
           <template #title_right>
-            <a :href="route('db.download')">Download</a>
+            <a :href="route('db.download')">Database ({{
+            $page.props.institute.short_name }})</a>
           </template>
           
           <div class="m-2">
@@ -73,7 +74,7 @@
                           type="button"
                           @click="restoreFile(file.name)"
                         >
-                          <i class="fa fa-undo"></i> Restore
+                          <i class="fa fa-undo"></i> Switch DB
                         </Button>
                       </Dropdown>
                     </div>
@@ -82,9 +83,7 @@
               </div>
               
               <div>
-                <pre>
-                  
-                </pre>
+                Current database: {{ $page.props.institute.short_name }}
               </div>
             </form>
           </div>
@@ -181,7 +180,7 @@ export default {
     restoreFile(name){
       //alert(name)
       Inertia.post(route("db.restore", name), {
-        replace: true,
+        replace: false,
         onBefore: () => {
           this.loadingTable = true;
         },

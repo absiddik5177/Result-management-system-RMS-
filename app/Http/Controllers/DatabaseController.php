@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Response;
 
@@ -11,11 +12,13 @@ class DatabaseController extends Controller
 {
     protected static $DB_PATH;
     protected static $BACKUP_PATH;
+    protected static $BACKUP_PREFIX;
     protected static $DB_NAME;
     public function __construct()
     {
         self::$DB_PATH     = database_path();
         self::$BACKUP_PATH = database_path('backup');
+        self::$BACKUP_PREFIX = Cache::get('institute')["short_name"];
         self::$DB_NAME     = env("DB_DATABASE");
     }
 
@@ -84,7 +87,7 @@ class DatabaseController extends Controller
         
         // Backup current DB if exists
         if (File::exists(self::$DB_PATH)) {
-            $backupName = $backup_name. '_' . time() . '.sqlite';
+            $backupName = self::$BACKUP_PREFIX. "_".$backup_name. '_' . time() . '.sqlite';
             File::move(self::$DB_PATH. DIRECTORY_SEPARATOR . self::$DB_NAME, self::$BACKUP_PATH . DIRECTORY_SEPARATOR . $backupName);
         }
 
@@ -92,9 +95,9 @@ class DatabaseController extends Controller
         File::move($sourcePath, self::$DB_PATH. DIRECTORY_SEPARATOR . self::$DB_NAME);
 
         // Reconnect SQLite
-        DB::purge('sqlite');
-        DB::reconnect('sqlite');
-
+        //DB::purge('sqlite');
+        //DB::reconnect('sqlite');
+        Cache::forget('institute');
         return [
           "message" => 'Database replaced successfully.',
           "type" => "success"
